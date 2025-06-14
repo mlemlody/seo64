@@ -28,17 +28,18 @@ private:
 	std::vector<Bind> m_binds{};
 
 private:
-	void save(const std::string &path);
 	void load(const std::string &path);
 
 public:
+	void save(const std::string &path);
 	bool onLoad() override;
 
 public:
 	void add(const Bind bind);
-
-private:
 	void remove(Bind *const bind_ptr);
+
+public:
+	std::vector<Bind>& getBinds() { return m_binds; }
 
 private:
 	void think();

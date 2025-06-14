@@ -9,6 +9,7 @@ private:
 
 public:
 	bool isOpen() const { return m_open; }
+	void setOpen(bool open) { m_open = open; }
 
 public:
 	bool onLoad() override;

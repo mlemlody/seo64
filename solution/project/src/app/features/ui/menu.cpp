@@ -1,11 +1,23 @@
 #include "menu.hpp"
 #include "widgets.hpp"
 #include "ui.hpp"
+#include "binds.hpp"
 
 #include "../notifs/notifs.hpp"
 #include "../player_list/player_list.hpp"
 #include "../entity_visuals/entity_visuals.hpp"
 #include "../cfg.hpp"
+
+static int resizeCallback(ImGuiInputTextCallbackData* data)
+{
+	if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
+	{
+		std::string* str = static_cast<std::string*>(data->UserData);
+		str->resize(data->BufTextLen);
+		data->Buf = const_cast<char*>(str->data());
+	}
+	return 0;
+}
 
 void Menu::run()
 {
@@ -15,14 +27,39 @@ void Menu::run()
 		return;
 	}
 
-	if (ImGui::Begin("seo64", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar))
+	if (ImGui::Begin("melo64", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar))
 	{
 		ImGui::SetWindowSize({ 600.0f, 460.0f }, ImGuiCond_::ImGuiCond_Once);
+		
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 10.0f));
+			
+			ImGui::SetCursorPosX(10.0f); // Padding from left
+			ImGui::SetCursorPosY(12.5f);  // Padding from top
+			
+			ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+			ImGui::SetWindowFontScale(1.5f); // 50%
+			ImGui::Text("melo64");
+			ImGui::SetWindowFontScale(1.0f); // Reset font scale
+			ImGui::PopFont();
+			
+			ImGui::SameLine(ImGui::GetWindowWidth() - 30.0f);
+			ImGui::SetCursorPosY(13.0f); // Align with the title
+			if (ImGui::Button("X", ImVec2(20, 20))) {
+				ui->setOpen(false);
+			}
+			
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor();
+			
+			ImGui::Separator();
+		}
 
 		if (ImGui::BeginTabBar("tabbar_main"))
 		{
 			enum class Tabs {
-				AIMBOT, AUTOMATION, EXPLOITS, VISUALS, MISC, PLAYERS, CONFIGS
+				AIMBOT, AUTOMATION, EXPLOITS, VISUALS, MISC, PLAYERS, CONFIGS, KEYBINDS
 			};
 
 			static Tabs tab{ Tabs::AIMBOT };
@@ -59,6 +96,11 @@ void Menu::run()
 
 			if (ImGui::BeginTabItem("configs")) {
 				tab = Tabs::CONFIGS;
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("keybinds")) {
+				tab = Tabs::KEYBINDS;
 				ImGui::EndTabItem();
 			}
 
@@ -470,26 +512,6 @@ void Menu::run()
 
 							toggle("active", &cfg::auto_vacc_active);
 							toggle("prioritise self", &cfg::auto_vacc_prioritise_local);
-
-							ImGui::PopItemWidth();
-						}
-						ImGui::EndChild();
-
-						ImGui::BeginChild("auto_strafe", { 180.0f, 0.0f }, ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY);
-						{
-							ImGui::PushItemWidth(100.0f);
-
-							ImGui::Text("auto strafe");
-							ImGui::Separator();
-
-							toggle("active", &cfg::auto_strafe_active);
-
-							ImGui::Separator();
-
-							sliderFloat("smoothness", &cfg::auto_strafe_smooth, 0.0f, 1.0f, "%.2f");
-
-							ImGui::Separator();
-							selectSingle("mode", &cfg::auto_strafe_mode, { { "on WASD", 0 }, { "always", 1 } });
 
 							ImGui::PopItemWidth();
 						}
@@ -1954,8 +1976,6 @@ void Menu::run()
 
 							ImGui::Text("misc");
 							ImGui::Separator();
-
-							toggle("bhop", &cfg::misc_bhop);
 							toggle("fast stop", &cfg::misc_faststop);
 							toggle("sv_pure bypass", &cfg::misc_sv_pure_bypass);
 							toggle("noisemaker spam", &cfg::misc_noisemaker_spam);
@@ -1969,6 +1989,28 @@ void Menu::run()
 
 							toggle("medieval chat", &cfg::misc_medieval_chat);
 							selectSingle("owo chat", &cfg::misc_owo_chat, { { "off", 0 }, { "owo", 1 }, { "uwu", 2 }, {"uvu", 3 } });
+
+							ImGui::PopItemWidth();
+						}
+						ImGui::EndChild();
+
+						ImGui::BeginChild("auto_strafe", { 180.0f, 0.0f }, ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY);
+						{
+							ImGui::PushItemWidth(100.0f);
+
+							ImGui::Text("movement");
+							ImGui::Separator();
+
+							toggle("bhop", &cfg::misc_bhop);
+
+							toggle("autostrafe", &cfg::auto_strafe_active);
+
+							ImGui::Separator();
+
+							sliderFloat("smoothness", &cfg::auto_strafe_smooth, 0.0f, 1.0f, "%.2f");
+
+							ImGui::Separator();
+							selectSingle("mode", &cfg::auto_strafe_mode, { { "on WASD", 0 }, { "always", 1 } });
 
 							ImGui::PopItemWidth();
 						}
@@ -2401,6 +2443,112 @@ void Menu::run()
 						std::filesystem::remove(p);
 					}
 				}
+				ImGui::EndChild();
+			}
+
+			else if (tab == Tabs::KEYBINDS)
+			{
+				ImGui::BeginChild("group_keybinds");
+				{
+					ImGui::BeginChild("keybinds_content", ImVec2{ ImGui::GetContentRegionAvail().x, 0.0f }, 
+						ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY);
+					{
+						ImGui::Text("Keybinds");
+						ImGui::Separator();
+						
+						ImGui::Text("This tab allows you to manage keyboard shortcuts for various features.");
+						ImGui::Text("Currently, you can bind keys through the right-click context menu on toggles.");
+						ImGui::Text("To bind a key to any feature:");
+						ImGui::BulletText("1. Right-click on the feature's checkbox or selection");
+						ImGui::BulletText("2. Select 'bind' from the context menu");
+						ImGui::BulletText("3. Enter a name, select key, and bind type (toggle/hold)");
+						
+						ImGui::Spacing();
+						ImGui::Separator();
+						ImGui::Spacing();
+						
+						ImGui::Text("Active Binds:");
+						ImGui::Spacing();
+						
+						ImGui::TextColored(ImVec4(0.7f, 0.7f, 1.0f, 1.0f), "Feature - Key - Type - State");
+						ImGui::TextWrapped("This table shows your active keybinds. Each row displays a feature, its assigned key, activation type, and current state.");
+						ImGui::Spacing();
+						
+						ImGui::Columns(4);
+						ImGui::SetColumnWidth(0, 200);
+						ImGui::Text("Feature"); ImGui::NextColumn();
+						ImGui::SetColumnWidth(1, 100);
+						ImGui::Text("Key"); ImGui::NextColumn();
+						ImGui::SetColumnWidth(2, 80); 
+						ImGui::Text("Type"); ImGui::NextColumn();
+						ImGui::Text("Actions"); ImGui::NextColumn();
+						
+						ImGui::Separator();
+						
+						std::vector<Bind*> to_remove{};
+						
+						if (binds) {
+							for (auto& bind : binds->getBinds()) {
+								ImGui::PushID(&bind);
+								if (!bind.name.empty()) {
+									ImGui::Text("%s", bind.name.c_str());
+								} else {
+									ImGui::Text("%s", bind.cfg_var_name.c_str());
+								}
+								
+								if (ImGui::IsItemHovered()) {
+									ImGui::BeginTooltip();
+									ImGui::Text("Variable: %s", bind.cfg_var_name.c_str());
+									
+									if (bind.var) {
+										ImGui::Text("Type: %s", 
+											bind.var->hash() == typeid(bool).hash_code() ? "Boolean" :
+											bind.var->hash() == typeid(int).hash_code() ? "Integer" :
+											bind.var->hash() == typeid(float).hash_code() ? "Float" : "Unknown");
+										
+										if (bind.var->hash() == typeid(bool).hash_code()) {
+											bool current = *static_cast<bool*>(bind.var->ptr());
+											ImGui::Text("Current state: %s", current ? "ON" : "OFF");
+										}
+									}
+									
+									ImGui::EndTooltip();
+								}
+								
+								ImGui::NextColumn();
+								
+								ImGui::Text("%s", utils::keyToStr(bind.key).c_str());
+								ImGui::NextColumn();
+								
+								ImGui::Text("%s", bind.type == BindType::TOGGLE ? "Toggle" : "Hold");
+								ImGui::NextColumn();
+								
+								if (ImGui::Button("Delete")) {
+									to_remove.push_back(&bind);
+								}
+								ImGui::NextColumn();
+								
+								ImGui::PopID();
+							}
+
+							for (auto* bind : to_remove) {
+								binds->remove(bind);
+							}
+						}
+						
+						ImGui::Columns(1);
+						
+						ImGui::Spacing();
+						ImGui::Separator();
+						ImGui::Spacing();
+						
+						if (ImGui::Button("Open Keybind Menu", ImVec2(200, 30))) {
+							notifs->message("Use the right-click context menu on toggles to add keybinds");
+						}
+					}
+					ImGui::EndChild();
+				}
+				
 				ImGui::EndChild();
 			}
 

@@ -10,3 +10,4 @@ bool sliderFloat(const char *const label, float *const var, float min, float max
 bool colorPicker(const char *const label, Color *const var);
 bool inputString(const char *const label, std::string *const var, const char *const fmt = "%s", int flags = 0);
 bool inputStringWithHint(const char *const label, std::string *const var, const char *const hint, const char *const fmt = "%s", int flags = 0);
+bool inputKey(int *const var);

@@ -236,26 +236,26 @@ void bindWidget(void *const var, WidgetCtx *const ctx)
 
 		if (ctx->m_type == WidgetType::TOGGLE)
 		{
-			if (ImGui::BeginCombo("##val_off", std::any_cast<bool>(bind_data.val_off) ? "true" : "false"))
+			if (ImGui::BeginCombo("##val_off", std::any_cast<bool>(bind_data.val_off) ? "On" : "Off"))
 			{
-				if (ImGui::Selectable("false", std::any_cast<bool>(bind_data.val_off) == false)) {
+				if (ImGui::Selectable("Off", std::any_cast<bool>(bind_data.val_off) == false)) {
 					bind_data.val_off = std::make_any<bool>(false);
 				}
 
-				if (ImGui::Selectable("true", std::any_cast<bool>(bind_data.val_off) == true)) {
+				if (ImGui::Selectable("On", std::any_cast<bool>(bind_data.val_off) == true)) {
 					bind_data.val_off = std::make_any<bool>(true);
 				}
 
 				ImGui::EndCombo();
 			}
 
-			if (ImGui::BeginCombo("##val_on", std::any_cast<bool>(bind_data.val_on) ? "true" : "false"))
+			if (ImGui::BeginCombo("##val_on", std::any_cast<bool>(bind_data.val_on) ? "On" : "Off"))
 			{
-				if (ImGui::Selectable("false", std::any_cast<bool>(bind_data.val_on) == false)) {
+				if (ImGui::Selectable("Off", std::any_cast<bool>(bind_data.val_on) == false)) {
 					bind_data.val_on = std::make_any<bool>(false);
 				}
 
-				if (ImGui::Selectable("true", std::any_cast<bool>(bind_data.val_on) == true)) {
+				if (ImGui::Selectable("On", std::any_cast<bool>(bind_data.val_on) == true)) {
 					bind_data.val_on = std::make_any<bool>(true);
 				}
 

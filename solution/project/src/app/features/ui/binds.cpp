@@ -356,6 +356,46 @@ void Binds::paint()
 
 					ImGui::PopID();
 				}
+
+				if (ImGui::IsItemHovered()) {
+					ImGui::BeginTooltip();
+					ImGui::Text("Variable: %s", bind.cfg_var_name.c_str());
+					
+					if (bind.var) {
+						ImGui::Text("Type: %s", 
+							bind.var->hash() == typeid(bool).hash_code() ? "Boolean" :
+							bind.var->hash() == typeid(int).hash_code() ? "Integer" :
+							bind.var->hash() == typeid(float).hash_code() ? "Float" : "Unknown");
+						
+						if (bind.var->hash() == typeid(bool).hash_code()) {
+							bool current = *static_cast<bool*>(bind.var->ptr());
+							ImGui::Text("Current state: %s", current ? "ON" : "OFF");
+							
+                            ImGui::Separator();
+                            ImGui::PushTextWrapPos(ImGui::GetFontSize() * 20.0f);
+                            
+                            if (bind.cfg_var_name.find("_active") != std::string::npos) {
+                                ImGui::TextColored(ImVec4(0.7f, 1.0f, 0.7f, 1.0f), "Toggles feature on/off");
+                            }
+                            else if (bind.cfg_var_name.find("aimbot") != std::string::npos) {
+                                ImGui::TextColored(ImVec4(0.7f, 1.0f, 0.7f, 1.0f), "Controls aimbot functionality");
+                            }
+                            else if (bind.cfg_var_name.find("auto_") != std::string::npos) {
+                                ImGui::TextColored(ImVec4(0.7f, 1.0f, 0.7f, 1.0f), "Toggles automatic behavior");
+                            }
+                            else if (bind.cfg_var_name.find("_ignore_") != std::string::npos) {
+                                ImGui::TextColored(ImVec4(0.7f, 1.0f, 0.7f, 1.0f), "Controls target filtering");
+                            }
+                            else {
+                                ImGui::TextColored(ImVec4(0.7f, 1.0f, 0.7f, 1.0f), "Toggles feature setting");
+                            }
+                            
+                            ImGui::PopTextWrapPos();
+						}
+					}
+					
+					ImGui::EndTooltip();
+				}
 			}
 			ImGui::EndChild();
 
@@ -401,7 +441,7 @@ void Binds::paint()
 				else
 				{
 					if (bind.var->hash() == typeid(bool).hash_code()) {
-						ImGui::Text(*static_cast<bool *>(bind.var->ptr()) ? "true" : "false");
+						ImGui::Text(*static_cast<bool *>(bind.var->ptr()) ? "On" : "Off");
 					}
 
 					else if (bind.var->hash() == typeid(int).hash_code()) {
@@ -421,7 +461,7 @@ void Binds::paint()
 
 				ImGui::BeginChild("appear_in_bindslist", ImVec2{ 25.0f, 0.0f }, ImGuiChildFlags_AutoResizeY);
 				{
-					ImGui::Text(bind.appear_in_bindslist ? "true" : "false");
+					ImGui::Text(bind.appear_in_bindslist ? "Show" : "Hide");
 				}
 				ImGui::EndChild();
 			}
