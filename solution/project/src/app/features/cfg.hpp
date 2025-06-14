@@ -407,7 +407,7 @@ MAKE_CFGVAR(notifs_fade_out_time, 0.5f);
 
 #pragma region ui	
 
-MAKE_CFGVAR(ui_color_base, Color({ 100, 100, 100, 255 }));
+MAKE_CFGVAR(ui_color_base, Color({ 50, 120, 150, 255 }));
 
 MAKE_CFGVAR(ui_pos_menu_x, 400.0f);
 MAKE_CFGVAR(ui_pos_menu_y, 200.0f);
