@@ -1013,12 +1013,12 @@ public:
 
 	int GetWeaponID()
 	{
-		return mem::callVirtual<382, int>(this); // >>
+		return mem::callVirtual<383, int>(this); // >>
 	}
 
 	int GetDamageType()
 	{
-		return mem::callVirtual<383, int>(this); // >>
+		return mem::callVirtual<384, int>(this); // >>
 	}
 
 	float GetSwingRange()
@@ -1028,12 +1028,12 @@ public:
 
 	float GetWeaponSpread()
 	{
-		return mem::callVirtual<468, float >(this); // >>
+		return mem::callVirtual<470, float >(this); // >>
 	}
 
 	bool IsEnergyWeapon()
 	{
-		return mem::callVirtual<433, bool>(this); // >>
+		return mem::callVirtual<435, bool>(this); // >>
 	}
 
 	bool HasPrimaryAmmoForShot()
@@ -1068,7 +1068,7 @@ public:
 
 	bool CanFireCriticalShot(bool bIsHeadshot)
 	{
-		return mem::callVirtual<426, bool, bool, C_BaseEntity *>(this, bIsHeadshot, nullptr); // >>
+		return mem::callVirtual<428, bool, bool, C_BaseEntity *>(this, bIsHeadshot, nullptr); // >>
 		//(*(unsigned __int8 (__fastcall **)(__int64, _QWORD, _QWORD))(*(_QWORD *)a1 + 3400i64))(a1, 0i64, 0i64)
 	}
 
@@ -1084,7 +1084,7 @@ public:
 
 	float Energy_GetShotCost()
 	{
-		return mem::callVirtual<435, float>(this); // >>
+		return mem::callVirtual<436, float>(this); // >>
 	}
 
 	float Energy_GetMaxEnergy()
@@ -1098,7 +1098,7 @@ public:
 
 	bool IsBlastImpactWeapon()
 	{
-		return mem::callVirtual<434, bool>(this); // >>
+		return mem::callVirtual<435, bool>(this); // >>
 	}
 
 	int GetMaxClip1()
