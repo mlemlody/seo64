@@ -519,3 +519,56 @@ bool inputStringWithHint(const char *const label, std::string *const var, const 
 {
 	return ImGui::InputTextWithHint(label, hint, var->data(), var->capacity() + 1, ImGuiInputTextFlags_CallbackResize | flags, resizeCallback, var);
 }
+
+bool customTabButton(const char *const label, bool is_active, const ImVec2& size)
+{
+	ImGui::PushID(label);
+	
+	// Set colors based on active state
+	if (is_active) {
+		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+	} else {
+		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_FrameBgActive));
+	}
+	
+	// Add rounding
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
+	
+	const bool clicked = ImGui::Button(label, size);
+	
+	ImGui::PopStyleVar();
+	ImGui::PopStyleColor(3);
+	ImGui::PopID();
+	
+	return clicked;
+}
+
+bool customTabGroup(const char *const id, const std::vector<std::string>& tab_names, int *current_tab)
+{
+	bool changed = false;
+	
+	ImGui::PushID(id);
+	
+	const float button_width = (ImGui::GetContentRegionAvail().x - (tab_names.size() - 1) * ImGui::GetStyle().ItemSpacing.x) / tab_names.size();
+	
+	for (size_t i = 0; i < tab_names.size(); ++i) {
+		if (i > 0) {
+			ImGui::SameLine();
+		}
+		
+		const bool is_active = (*current_tab == static_cast<int>(i));
+		
+		if (customTabButton(tab_names[i].c_str(), is_active, ImVec2(button_width, 0))) {
+			*current_tab = static_cast<int>(i);
+			changed = true;
+		}
+	}
+	
+	ImGui::PopID();
+	
+	return changed;
+}

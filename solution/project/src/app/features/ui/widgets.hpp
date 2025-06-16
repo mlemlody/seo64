@@ -11,3 +11,5 @@ bool colorPicker(const char *const label, Color *const var);
 bool inputString(const char *const label, std::string *const var, const char *const fmt = "%s", int flags = 0);
 bool inputStringWithHint(const char *const label, std::string *const var, const char *const hint, const char *const fmt = "%s", int flags = 0);
 bool inputKey(int *const var);
+bool customTabButton(const char *const label, bool is_active, const ImVec2& size = ImVec2(0, 0));
+bool customTabGroup(const char *const id, const std::vector<std::string>& tab_names, int *current_tab);

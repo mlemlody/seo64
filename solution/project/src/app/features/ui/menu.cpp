@@ -27,9 +27,17 @@ void Menu::run()
 		return;
 	}
 
+	// Custom tab demo
+	static int demo_tab = 0;
+	std::vector<std::string> demo_tabs = {"tab1", "tab2", "tab3"};
+
 	if (ImGui::Begin("melo64", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar))
 	{
 		ImGui::SetWindowSize({ 600.0f, 460.0f }, ImGuiCond_::ImGuiCond_Once);
+		
+		// Add global rounding for this window
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0f);
 		
 		{
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -55,6 +63,15 @@ void Menu::run()
 			
 			ImGui::Separator();
 		}
+
+		// Demo of custom tabs with rounding
+		static int main_tab = 0;
+		std::vector<std::string> main_tabs = {"aimbot", "automation", "exploits", "visuals", "misc", "players", "configs", "keybinds"};
+		
+		// Custom tab buttons with rounding
+		customTabGroup("main_tabs", main_tabs, &main_tab);
+		
+		ImGui::Spacing();
 
 		if (ImGui::BeginTabBar("tabbar_main"))
 		{
@@ -2561,6 +2578,9 @@ void Menu::run()
 
 		cfg::ui_pos_menu_x = ImGui::GetWindowPos().x;
 		cfg::ui_pos_menu_y = ImGui::GetWindowPos().y;
+
+		// Pop the style variables we pushed at the beginning
+		ImGui::PopStyleVar(2); // FrameRounding and WindowRounding
 
 		ImGui::End();
 	}
